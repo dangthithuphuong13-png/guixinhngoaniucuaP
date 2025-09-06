@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Space Gift</title>
+<style>
+:root {
+    --line-gap: 1cm;
+    --speed-multiplier: 1;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: black;
+    height: 100%;
+}
+#starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at center, #111 0%, #000 100%);
+    z-index: -3;
+}
+.layer {
+    position: absolute;
+    width: 100%;
+    white-space: nowrap;
+    font-size: 24px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.layer-back {
+    animation: scrollYBack calc(60s / var(--speed-multiplier)) linear infinite,
+               scrollXBack calc(40s / var(--speed-multiplier)) ease-in-out infinite alternate;
+}
+.layer-front {
+    animation: scrollYFront calc(45s / var(--speed-multiplier)) linear infinite,
+               scrollXFront calc(30s / var(--speed-multiplier)) ease-in-out infinite alternate;
+}
+@keyframes scrollYBack {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
+}
+@keyframes scrollYFront {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
+}
+@keyframes scrollXBack {
+    from { transform: translateX(0); }
+    to { transform: translateX(20px); }
+}
+@keyframes scrollXFront {
+    from { transform: translateX(0); }
+    to { transform: translateX(-20px); }
+}
+#overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+#controls {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div id="starfield"></div>
+<div class="layer layer-back" id="layerBack"></div>
+<div class="layer layer-front" id="layerFront"></div>
+
+<div id="overlay">
+    <h1>🎁 Món quà vũ trụ 🎁</h1>
+    <button id="startBtn" style="padding:10px 20px;font-size:18px;">Mở quà</button>
+</div>
+
+<div id="controls">
+    <label>Tốc độ: <input type="range" id="speedControl" min="0.1" max="2" step="0.1" value="1"></label><br>
+    <label>Nội dung: <input type="text" id="textControl" value="Chúc mừng sinh nhật!"></label>
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const LINES_PER_LAYER = 200;
+let defaultText = "Chúc mừng sinh nhật!";
+
+function populateLayer(layerId, text) {
+    const layer = document.getElementById(layerId);
+    layer.innerHTML = "";
+    for (let i = 0; i < LINES_PER_LAYER; i++) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        div.style.marginBottom = "var(--line-gap)";
+        layer.appendChild(div);
+    }
+}
+
+populateLayer("layerBack", defaultText);
+populateLayer("layerFront", defaultText);
+
+document.getElementById("speedControl").addEventListener("input", e => {
+    document.documentElement.style.setProperty("--speed-multiplier", e.target.value);
+});
+
+document.getElementById("textControl").addEventListener("input", e => {
+    populateLayer("layerBack", e.target.value);
+    populateLayer("layerFront", e.target.value);
+});
+
+document.getElementById("startBtn").addEventListener("click", () => {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("bgMusic").play();
+});
+</script>
+
+</body>
+</html>
